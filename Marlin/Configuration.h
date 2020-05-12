@@ -749,7 +749,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 320.92, 321.78, 6374.80, 1660.00 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 323.95, 325.36, 6387.15, 1660.00 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -1437,17 +1437,17 @@
 
   // Or, set the default skew factors directly here
   // to override the above measurements:
-  #define XY_SKEW_FACTOR -0.0074
+  #define XY_SKEW_FACTOR -0.004244
 
-  //#define SKEW_CORRECTION_FOR_Z
+  #define SKEW_CORRECTION_FOR_Z
   #if ENABLED(SKEW_CORRECTION_FOR_Z)
     #define XZ_DIAG_AC 282.8427124746
     #define XZ_DIAG_BD 282.8427124746
     #define YZ_DIAG_AC 282.8427124746
     #define YZ_DIAG_BD 282.8427124746
     #define YZ_SIDE_AD 200
-    #define XZ_SKEW_FACTOR 0.0
-    #define YZ_SKEW_FACTOR 0.0
+    #define XZ_SKEW_FACTOR 0.007363
+    #define YZ_SKEW_FACTOR -0.002052
   #endif
 
   // Enable this option for M852 to set skew at runtime
