@@ -35,7 +35,6 @@
 
 #ifndef __MARLIN_DEPS__
   #include HAL_PATH(../HAL, timers.h)
-  #include HAL_PATH(../HAL, spi_pins.h)
 #endif
 
 #include "Conditionals_post.h"
@@ -53,5 +52,5 @@
   #include "../core/language.h"
   #include "../core/utility.h"
   #include "../core/serial.h"
-
+  
 #endif

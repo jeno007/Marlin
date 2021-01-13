@@ -22,6 +22,9 @@
 
 #include "../inc/MarlinConfig.h"
 
+#include <utility/spi_com.h> //use this as helper for SPI peripheral Init configuration (temporary)
+#include "../STM32/HAL_config.h"
+
 #if ENABLED(SDSUPPORT)
 
 //#define DEBUG_CARDREADER
@@ -375,26 +378,48 @@ void CardReader::mount() {
   flag.mounted = false;
   if (root.isOpen()) root.close();
 
-  if (!sd2card.init(SPI_SPEED, SDSS)
-    #if defined(LCD_SDSS) && (LCD_SDSS != SDSS)
-      && !sd2card.init(SPI_SPEED, LCD_SDSS)
-    #endif
-  ) SERIAL_ECHO_MSG(STR_SD_INIT_FAIL);
-  else if (!volume.init(&sd2card))
-    SERIAL_ERROR_MSG(STR_SD_VOL_INIT_FAIL);
-  else if (!root.openRoot(&volume))
-    SERIAL_ERROR_MSG(STR_SD_OPENROOT_FAIL);
+  if (!Sd2Card::anyInserted())
+    SERIAL_ECHO_MSG("No SD card found...");
   else {
-    flag.mounted = true;
-    SERIAL_ECHO_MSG(STR_SD_CARD_OK);
-  }
+    bool initOK = false;
+    uint8_t order[] = SD_SEARCH_ORDER;
+    for (uint8_t i = 0; i < COUNT(order) && !initOK; i++) {
+      char mess[45];
+      sprintf(mess, PSTR("SPI bus %d: Card is "), order[i]);
+      SERIAL_ECHO(mess);
 
-  if (flag.mounted)
-    cdroot();
-  #if ENABLED(USB_FLASH_DRIVE_SUPPORT) || PIN_EXISTS(SD_DETECT)
-    else if (marlin_state != MF_INITIALIZING)
-      ui.set_status_P(GET_TEXT(MSG_SD_INIT_FAIL), -1);
-  #endif
+      for (uint8_t dev = 0; dev < NUM_SPI_DEVICES && !initOK; dev++)
+        if (BUS_OF_DEV(dev) == order[i] && IS_DEV_SD(dev)) {
+         if (sd2card.isInserted(dev)) {
+            SERIAL_ECHOLN("IN -> Initializing...");
+            sd2card.dev_num = dev;
+            initOK = sd2card.init(SPI_SPEED);
+          }
+          else
+            SERIAL_ECHOLN("OUT.");
+        }
+    }
+
+    if (!initOK) // Card not found
+      SERIAL_ECHO_MSG(STR_SD_INIT_FAIL);
+    else if (!volume.init(&sd2card))
+      SERIAL_ERROR_MSG(STR_SD_VOL_INIT_FAIL);
+    else if (!root.openRoot(&volume))
+      SERIAL_ERROR_MSG(STR_SD_OPENROOT_FAIL);
+    else {
+      flag.mounted = true;
+      SERIAL_ECHO_MSG(STR_SD_CARD_OK);
+      #if ENABLED(EEPROM_SETTINGS) && NONE(FLASH_EEPROM_EMULATION, SPI_EEPROM, I2C_EEPROM)
+        settings.first_load();
+      #endif
+    }
+    if (flag.mounted)
+      cdroot();
+    #if ENABLED(USB_FLASH_DRIVE_SUPPORT) || PIN_EXISTS(SD_DETECT)
+      else if (marlin_state != MF_INITIALIZING)
+        ui.set_status_P(GET_TEXT(MSG_SD_INIT_FAIL), -1);
+    #endif
+  }
 
   ui.refresh();
 }

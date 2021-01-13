@@ -262,12 +262,14 @@
   // Due to a pull resistor on the clock line, it needs to use SPI Data Mode 3 to
   // function with Hardware SPI. This is not currently configurable in the HAL,
   // so force Software SPI to work around this issue.
+  /*
   #define SOFTWARE_SPI
   #define SDSS                              PA4
   #define SCK_PIN                           PA5
   #define MISO_PIN                          PA6
   #define MOSI_PIN                          PB5
   #define SD_DETECT_PIN                     PB11
+  */
 
 #elif SD_CONNECTION_IS(CUSTOM_CABLE)
   #error "CUSTOM_CABLE is not a supported SDCARD_CONNECTION for this board"
