@@ -20,7 +20,7 @@ const int SPI_BusConfig[NUM_SPI_BUSES][6] = {
 const int SPI_Devices[][9] = {
 // Device type      BUS  Polarity Phase    Bit      MAX Supported  Selection Detect PIN Level when detected
 //                  NR.                    Order    Speed          PIN        (SD only) (SD only)
-  {DEVTYPE_SD     ,   0, SPI_PHI, SPI_STL, SPI_MSB, SPI_HALF_SPEED,     PA4,      PB11, LOW    },
+  {DEVTYPE_SD     ,   0, SPI_PHI, SPI_STL, SPI_MSB, SPI_FULL_SPEED,     PA4,      PB11, LOW    },
   {DEVTYPE_SD     ,   1, SPI_PLO, SPI_LTS, SPI_MSB, SPI_FULL_SPEED,    PB12,      PF12, ExtSDLV},
   {DEVTYPE_SD     ,   2, SPI_PLO, SPI_LTS, SPI_MSB, SPI_FULL_SPEED,    PA15,        NC, NC     }, //optional external SD on SPI3
 #if HAS_SPI_LCD
