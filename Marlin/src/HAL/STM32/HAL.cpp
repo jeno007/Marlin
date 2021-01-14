@@ -24,6 +24,7 @@
 
 #include "HAL.h"
 #include "usb_serial.h"
+#include "msc_sd.h"
 
 #include "../../inc/MarlinConfig.h"
 
@@ -99,6 +100,10 @@ void HAL_init() {
   //#endif
 
   SetTimerInterruptPriorities();
+
+#ifdef USBD_USE_CDC_MSC
+  MSC_SD_Init();
+#endif
 
   TERN_(EMERGENCY_PARSER, USB_Hook_init());
 }
